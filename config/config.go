@@ -3,7 +3,6 @@ package config
 import (
 	"embed"
 	"io/ioutil"
-	"log"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
@@ -38,7 +37,6 @@ func Read() (cfg Setting, err error) {
 	err = yaml.Unmarshal(bytes, &cfg)
 
 	if err != nil {
-		log.Printf("%+v\n", errors.WithStack(err))
 		return cfg, errors.WithStack(err)
 	}
 
