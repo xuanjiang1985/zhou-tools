@@ -16,6 +16,7 @@ import (
 )
 
 var (
+	port = "8905"
 	//go:embed tmpl
 	tmpl embed.FS
 
@@ -50,43 +51,43 @@ func StartWebServer(ctx context.Context, ticker *time.Ticker) {
 	}
 
 	r := gin.Default()
-	// r.GET("/ping", func(c *gin.Context) {
-	// 	c.JSON(200, gin.H{
-	// 		"message": "pong",
-	// 	})
-	// })
-	// t, _ := template.ParseFS(public, "*.hmtl")
-	// r.SetHTMLTemplate(t)
-	// r.GET("/", func(ctx *gin.Context) {
-	// 	ctx.HTML(200, "index.html", gin.H{"title": "Golang Embed 测试"})
 
-	// })
-
-	t, _ := template.ParseFS(tmpl, "tmpl/*.html")
+	t, _ := template.ParseFS(tmpl, "tmpl/*.html", "tmpl/**/*.html")
 	r.SetHTMLTemplate(t)
 	version := time.Now().UnixNano()
 	r.StaticFS("/static", http.FS(static))
 
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
+			"title":   "工具管理",
 			"version": version,
 		})
 	})
 
 	r.GET("/zhou", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "zhou.html", gin.H{
+			"title":   "工具管理",
 			"version": version,
 		})
 	})
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"title": "Main site",
-		})
+	r.GET("favicon.ico", func(c *gin.Context) {
+		file, err := static.ReadFile("img/favicon.ico")
+		if err != nil {
+			logger.Logger.Info(err)
+		}
+
+		c.Data(
+			http.StatusOK,
+			"image/x-icon",
+			file,
+		)
 	})
 
-	fmt.Printf("\n🚀 请访问网站: http://127.0.0.1:8900\n\n")
-	err = r.Run(":8900")
+	loadRouterAPI(r)
+
+	fmt.Printf("\n🚀 请访问网站: http://127.0.0.1:%s\n\n", port)
+	err = r.Run(":" + port)
 	if err != nil {
 		fmt.Printf("❌ 错误 %v\n", err)
 		os.Exit(0)
