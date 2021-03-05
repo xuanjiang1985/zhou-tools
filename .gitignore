@@ -1,6 +1,4 @@
 main
 main.exe
-/.idea
-logrus.log
+.idea
 .DS_Store 
-*/.DS_Store

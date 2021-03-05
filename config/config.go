@@ -2,6 +2,7 @@ package config
 
 import (
 	"embed"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/pkg/errors"
@@ -12,6 +13,19 @@ import (
 type Setting struct {
 	AppName string `yaml:"appName"`
 	AppEnv  string `yaml:"appEnv"`
+	AppPort int    `yaml:"appPort"`
+
+	Database struct {
+		Host   string
+		User   string
+		Dbname string
+		Pwd    string
+	}
+
+	Redis struct {
+		Host string
+		Pwd  string
+	}
 }
 
 var (
@@ -39,6 +53,8 @@ func Read() (cfg Setting, err error) {
 	if err != nil {
 		return cfg, errors.WithStack(err)
 	}
+
+	fmt.Println(cfg)
 
 	return cfg, err
 }

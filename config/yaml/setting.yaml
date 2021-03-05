@@ -1,2 +1,14 @@
 appName: ZhouTools
-appEnv: local # local, deve, produce
+appEnv: prod # [local, dev, prod]
+appPort: 8905
+
+# mysql 5.7
+database:
+  host: 127.0.0.1
+  user: root
+  dbname: test
+  pwd: root
+
+redis:
+  host: 127.0.0.1
+  pwd: yourpassword

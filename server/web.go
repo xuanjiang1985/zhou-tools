@@ -44,7 +44,7 @@ func StartWebServer(ctx context.Context, ticker *time.Ticker) {
 		log.Fatalln(err)
 	}
 
-	if "produce" == setting.AppEnv {
+	if "prod" == setting.AppEnv {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
 		gin.SetMode(gin.DebugMode)

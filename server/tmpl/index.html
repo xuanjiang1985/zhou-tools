@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,9 +9,13 @@
 </head>
 <body>
     <div id="app">
-        @{ name }
+       
         <br>
-        <button @click="hello">click</button>
+        
+        <div class="main-container">
+            <button class="btn" @click="hello">确 定</button>
+            <button class="btn" @click="hello">端口扫描</button>
+        </div>
     </div>
     {{ template "tmpl/layout/footer" }}
     <script src="static/js/index.js?v={{ .version }}"></script>
