@@ -11,6 +11,10 @@ import (
 )
 
 func main() {
+
+	// 初始化日志
+	logger.Setup()
+
 	ctx, cancel := context.WithCancel(context.Background())
 	ticker := time.NewTicker(30 * time.Second)
 

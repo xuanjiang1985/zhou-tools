@@ -2,7 +2,7 @@ package logger
 
 import (
 	"log"
-	"os"
+	"zhou/tools/config"
 
 	"github.com/sirupsen/logrus"
 )
@@ -10,12 +10,26 @@ import (
 // Logger is a new instance
 var Logger = logrus.New()
 
-func init() {
+// Setup init logrus
+func Setup() {
 
-	src, err := os.OpenFile("storage/logrus.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	setting, err := config.Read()
 	if err != nil {
-		log.Fatalf("create file log failed: %v", err)
+		log.Fatalln(err)
 	}
-	Logger.Out = src
+	log.Println(setting)
+
+	level, err := logrus.ParseLevel(setting.Log.Level)
+	if err != nil {
+		log.Panic("日志level格式设置错误", err)
+	}
+	Logger.SetLevel(level)
+
 	Logger.SetFormatter(&logrus.JSONFormatter{})
+
+	// 取消线程安全
+	Logger.SetNoLock()
+
+	// 自定义HOOK
+	Logger.AddHook(&MyHook{})
 }
