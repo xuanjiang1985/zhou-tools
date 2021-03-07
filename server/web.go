@@ -5,7 +5,6 @@ import (
 	"embed"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -34,17 +33,12 @@ func StartWebServer(ctx context.Context, ticker *time.Ticker) {
 				logger.Logger.Info("web 服务器退出")
 				return
 			case <-ticker.C:
-				logger.Logger.Info(("运行中"))
+				logger.Logger.Info(("web 服务器运行中"))
 			}
 		}
 	}()
 
-	setting, err := config.Read()
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	if "prod" == setting.AppEnv {
+	if "prod" == config.Setting.AppEnv {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
 		gin.SetMode(gin.DebugMode)
@@ -87,7 +81,7 @@ func StartWebServer(ctx context.Context, ticker *time.Ticker) {
 	loadRouterAPI(r)
 
 	fmt.Printf("\n🚀 请访问网站: http://127.0.0.1:%s\n\n", port)
-	err = r.Run(":" + port)
+	err := r.Run(":" + port)
 	if err != nil {
 		fmt.Printf("❌ 错误 %v\n", err)
 		os.Exit(0)

@@ -1,3 +1,3 @@
 package cmd
 
-// just for auto build
+// just for auto build in lib rizla

@@ -5,35 +5,29 @@ import (
 	"log"
 	"os"
 	"time"
+	"zhou/tools/config"
 
 	"github.com/sirupsen/logrus"
 )
 
-type MyHook struct{}
+type logHook struct{}
 
-var openFile *os.File
-
-func (h *MyHook) Levels() []logrus.Level {
+func (h *logHook) Levels() []logrus.Level {
 	return logrus.AllLevels
 }
 
-func (h *MyHook) Fire(entry *logrus.Entry) (err error) {
+func (h *logHook) Fire(entry *logrus.Entry) (err error) {
 	fileName := time.Now().Format("2006-01-02")
-	fullPath := fmt.Sprintf("%s/%s.log", "storage", fileName)
+	fullPath := fmt.Sprintf("%s/%s.log", config.Setting.Log.Logdir, fileName)
 
-	// 无需多次获取文件句柄
-	if openFile != nil && openFile.Name() == fullPath {
+	if err = os.MkdirAll(config.Setting.Log.Logdir, os.ModePerm); err != nil {
+		log.Panicln("创建文件夹错误", err)
 		return
 	}
 
-	if err = os.MkdirAll("storage", os.ModePerm); err != nil {
-		log.Panic("创建文件夹错误", err)
-		return
-	}
-
-	openFile, err = os.OpenFile(fullPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	openFile, err := os.OpenFile(fullPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		log.Panic("写入日志文件错误", err)
+		log.Panicln("写入日志文件错误", err)
 		return
 	}
 

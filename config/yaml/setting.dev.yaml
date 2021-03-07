@@ -1,6 +1,10 @@
 appName: ZhouTools
-appEnv: dev # [local, dev, prod]
+appEnv: prod # [local, dev, prod]
 appPort: 8905
+
+log:
+  level: info #[fatal, error, warn, info, debug]
+  logdir: storage
 
 # mysql 5.7
 database:

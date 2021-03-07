@@ -3,13 +3,13 @@ package config
 import (
 	"embed"
 	"io/ioutil"
+	"log"
 
-	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 )
 
-// Setting struct for read setting.yaml
-type Setting struct {
+// Setting struct init setting.yaml
+type setting struct {
 	AppName string `yaml:"appName"`
 	AppEnv  string `yaml:"appEnv"`
 	AppPort int    `yaml:"appPort"`
@@ -33,30 +33,32 @@ type Setting struct {
 }
 
 var (
+	// Setting define new setting struct
+	Setting setting
 	//go:embed yaml
 	fs embed.FS
 )
 
-// Read returns yaml setting data
-func Read() (cfg Setting, err error) {
+// Setup init Setting struct
+func Setup() {
 
 	file, err := fs.Open("yaml/setting.yaml")
 
 	if err != nil {
-		return cfg, errors.WithStack(err)
+		log.Panicln(err)
+		return
 	}
 
 	bytes, err := ioutil.ReadAll(file)
 
 	if err != nil {
-		return cfg, errors.WithStack(err)
+		log.Panicln(err)
+		return
 	}
 
-	err = yaml.Unmarshal(bytes, &cfg)
+	err = yaml.Unmarshal(bytes, &Setting)
 
 	if err != nil {
-		return cfg, errors.WithStack(err)
+		log.Panicln(err)
 	}
-
-	return cfg, err
 }

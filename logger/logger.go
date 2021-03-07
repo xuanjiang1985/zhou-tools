@@ -13,15 +13,9 @@ var Logger = logrus.New()
 // Setup init logrus
 func Setup() {
 
-	setting, err := config.Read()
+	level, err := logrus.ParseLevel(config.Setting.Log.Level)
 	if err != nil {
-		log.Fatalln(err)
-	}
-	log.Println(setting)
-
-	level, err := logrus.ParseLevel(setting.Log.Level)
-	if err != nil {
-		log.Panic("日志level格式设置错误", err)
+		log.Panicln("日志level格式设置错误", err)
 	}
 	Logger.SetLevel(level)
 
@@ -31,5 +25,5 @@ func Setup() {
 	Logger.SetNoLock()
 
 	// 自定义HOOK
-	Logger.AddHook(&MyHook{})
+	Logger.AddHook(&logHook{})
 }
