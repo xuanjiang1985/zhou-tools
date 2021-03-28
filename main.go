@@ -22,7 +22,7 @@ func main() {
 	logger.Setup()
 
 	ctx, cancel := context.WithCancel(context.Background())
-	ticker := time.NewTicker(30 * time.Second)
+	ticker := time.NewTicker(60 * time.Second)
 
 	// 任务调度
 	go cron.Run(ctx)
@@ -38,6 +38,6 @@ func main() {
 	// 退出信号
 	s := <-signalChan
 	cancel()
-	logger.Logger.Info("捕捉程序中断信号: ", s)
+	logger.Logger.Info("捕捉到中断信号: ", s)
 	time.Sleep(500 * time.Microsecond)
 }

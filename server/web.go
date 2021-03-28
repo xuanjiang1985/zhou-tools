@@ -65,6 +65,13 @@ func StartWebServer(ctx context.Context, ticker *time.Ticker) {
 		})
 	})
 
+	r.GET("/scan", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "scan.html", gin.H{
+			"title":   "端口扫描",
+			"version": version,
+		})
+	})
+
 	r.GET("favicon.ico", func(c *gin.Context) {
 		file, err := static.ReadFile("img/favicon.ico")
 		if err != nil {

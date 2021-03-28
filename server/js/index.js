@@ -29,6 +29,9 @@ const vm = new Vue({
         },
         hello() {
             alert("hello")
+        },
+        goScan() {
+            window.location.href = '/scan'
         }
     }
   })

@@ -4,6 +4,7 @@
 	--text-color: #212121;
     --btn-color: #fff;
 	--color-alpha: #c3423f;
+	--input-background: #fff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -13,6 +14,7 @@
 		--text-color: #ededed;
         --btn-color: rgb(15, 15, 15);
 		--color-alpha: #50a8d8;
+		--input-background: rgb(202, 200, 200);
 	}
 }
 
@@ -46,3 +48,11 @@ body {
 		--color-alpha: #50a8d8;
 	}
 } */
+
+.input-search {
+	height: 34px;
+    width: 70%;
+	background-color: var(--input-background);
+	padding-left: 8px;
+	border: none;
+}
