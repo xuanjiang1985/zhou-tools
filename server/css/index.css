@@ -23,36 +23,18 @@ body {
 	color: var(--text-color);
 }
 
-.btn {
-    padding: 8px 16px;
-    background-color: #919398;
-    color: var(--btn-color);
-    border: 0;
-    opacity: 0.9;
-}
-
-.btn:hover {
-    opacity: 1;
-    cursor: pointer;
-}
-
 .main-container {
-    width: 50%;
+    width: 60%;
     margin: 0 auto;
 }
-/* @media (prefers-color-scheme: dark) {
-	:root {
-		--background-color: #111;
-		--page-background: #212121;
-		--text-color: #ededed;
-		--color-alpha: #50a8d8;
-	}
-} */
-
-.input-search {
-	height: 34px;
-    width: 70%;
-	background-color: var(--input-background);
-	padding-left: 8px;
-	border: none;
+.input-port {
+	width: 30%;
+}
+.global-loading {
+	height: 120px;
+    width: 120px;
+    margin: 0 auto;
+    top: 32%;
+    border-radius: 8px;
+	background-color: rgba(91, 91, 91, 0.23);
 }

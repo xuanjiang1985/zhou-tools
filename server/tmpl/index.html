@@ -9,12 +9,10 @@
 </head>
 <body>
     <div id="app">
-       
         <br>
-        
         <div class="main-container">
-            <button class="btn" @click="hello">确 定</button>
-            <button class="btn" @click="goScan">端口扫描</button>
+            <el-button @click="hello">确 定</el-button>
+            <el-button @click="goScan">端口扫描</el-button>
         </div>
     </div>
     {{ template "tmpl/layout/footer" }}

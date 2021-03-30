@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,15 @@ func loadRouterAPI(e *gin.Engine) {
 			c.JSON(http.StatusOK, gin.H{
 				"code":    0,
 				"content": "Main site api",
+				"message": "",
+			})
+		})
+
+		router.POST("/scan/port", func(c *gin.Context) {
+			fmt.Println(c.Params)
+			c.JSON(http.StatusOK, gin.H{
+				"code":    0,
+				"content": "Main site api111",
 				"message": "",
 			})
 		})

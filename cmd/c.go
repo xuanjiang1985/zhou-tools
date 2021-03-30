@@ -4,5 +4,5 @@ import "fmt"
 
 // just for auto build in lib rizla
 func to() {
-	fmt.Println("1go 1111")
+	fmt.Println("1go 111111111")
 }
