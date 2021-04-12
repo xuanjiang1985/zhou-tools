@@ -1,9 +1,9 @@
 package logger
 
 import (
-	"log"
 	"zhou/tools/config"
 
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -11,11 +11,11 @@ import (
 var Logger = logrus.New()
 
 // Setup init logrus
-func Setup() {
+func Setup() error {
 
 	level, err := logrus.ParseLevel(config.Setting.Log.Level)
 	if err != nil {
-		log.Panicln("日志level格式设置错误", err)
+		return errors.WithStack(err)
 	}
 	Logger.SetLevel(level)
 
@@ -26,4 +26,6 @@ func Setup() {
 
 	// 自定义HOOK
 	Logger.AddHook(&logHook{})
+
+	return nil
 }

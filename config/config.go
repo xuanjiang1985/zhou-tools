@@ -3,8 +3,8 @@ package config
 import (
 	"embed"
 	"io/ioutil"
-	"log"
 
+	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 )
 
@@ -40,25 +40,25 @@ var (
 )
 
 // Setup init Setting struct
-func Setup() {
+func Setup() error {
 
 	file, err := fs.Open("yaml/setting.yaml")
 
 	if err != nil {
-		log.Panicln(err)
-		return
+		return errors.WithStack(err)
 	}
 
 	bytes, err := ioutil.ReadAll(file)
 
 	if err != nil {
-		log.Panicln(err)
-		return
+		return errors.WithStack(err)
 	}
 
 	err = yaml.Unmarshal(bytes, &Setting)
 
 	if err != nil {
-		log.Panicln(err)
+		return errors.WithStack(err)
 	}
+
+	return nil
 }

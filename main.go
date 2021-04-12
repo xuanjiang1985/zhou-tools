@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,11 +16,18 @@ import (
 func main() {
 
 	// 读取配置
-	config.Setup()
-	//log.Println(config.Setting)
+	if err := config.Setup(); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	//fmt.Println(config.Setting)
 
 	// 初始化日志
-	logger.Setup()
+	if err := logger.Setup(); err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	ticker := time.NewTicker(60 * time.Second)
@@ -29,6 +37,8 @@ func main() {
 
 	// web 服务
 	go server.StartWebServer(ctx, ticker)
+
+	// web socket
 
 	// 程序终止信号
 	signalChan := make(chan os.Signal, 1)
