@@ -15,6 +15,10 @@ type Port struct {
 	EndPort   string `json:"end_port"`
 }
 
+var (
+	MsgChan = make(chan string, 10)
+)
+
 func (p *Port) Scan(c *gin.Context) {
 	if "" == p.Host {
 		c.JSON(http.StatusOK, gin.H{
@@ -79,39 +83,40 @@ func (p *Port) Scan(c *gin.Context) {
 		return
 	}
 
-	var result []string
-	if startPort == endPort {
-		result = append(result, scanOne(p.Host, startPort))
-	} else {
-		result = scanRange(p.Host, startPort, endPort)
-	}
+	go func() {
+		if startPort == endPort {
+			MsgChan <- scanOne(p.Host, startPort)
+		} else {
+			scanRange(p.Host, startPort, endPort, MsgChan)
+		}
+
+	}()
 
 	c.JSON(http.StatusOK, gin.H{
 		"code":    0,
-		"content": result,
-		"message": "",
+		"content": "",
+		"message": "ok",
 	})
 }
 
 func scanOne(host string, port int) string {
-	_, err := net.DialTimeout("tcp", host+":"+strconv.Itoa(port), time.Duration(time.Microsecond*200))
+	_, err := net.DialTimeout("tcp", host+":"+strconv.Itoa(port), time.Duration(time.Second))
 	if err != nil {
-		return err.Error() + "\n"
+		return err.Error() + "port: " + strconv.Itoa(port)
 	}
 
-	return "端口" + strconv.Itoa(port) + "已开放" + "\n"
+	return "端口" + strconv.Itoa(port) + "已开放"
 }
 
-func scanRange(host string, startPort, endPort int) []string {
-	returnData := make([]string, 0, 10)
+func scanRange(host string, startPort, endPort int, msg chan string) {
 	for i := startPort; i <= endPort; i++ {
 
-		_, err := net.DialTimeout("tcp", host+":"+strconv.Itoa(i), time.Duration(time.Microsecond*200))
+		_, err := net.DialTimeout("tcp", host+":"+strconv.Itoa(i), time.Duration(time.Second))
 		if err != nil {
-			returnData = append(returnData, err.Error()+"\n")
+			msg <- err.Error() + "port: " + strconv.Itoa(i)
 			continue
 		}
-		returnData = append(returnData, "端口"+strconv.Itoa(i)+"已开放"+"\n")
+		msg <- "端口" + strconv.Itoa(i) + "已开放"
 	}
-	return returnData
+
 }

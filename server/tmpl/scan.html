@@ -26,7 +26,9 @@
                 <el-form-item label="">
                     <el-button @click="formSubmit">提 交</el-button>
                 </el-form-item>
-            
+                <br>
+                
+                <pre>[{ output }]</pre>
             </el-form>
         </div>
     </div>
@@ -35,6 +37,7 @@
     <script>
         var vueC = new Vue({
             el: '#app',
+            delimiters:['[{','}]'],
             data: {
                 id: 0,
                 total: 0,
@@ -88,7 +91,11 @@
                     start_time: '',
                     end_time: '',
                     type: ''
-                }
+                },
+                // ws
+                socket: null,
+                input: null,
+                output: ''
             },
             filters: {
                 formatDate(param) {
@@ -112,7 +119,10 @@
                 }
             },
             mounted() {
-                this.getList()
+                //this.getList()
+                setTimeout(() => {
+                    this.wsInit()
+                }, 1000);
             },
             methods: {
                 handleSizeChange(val) {
@@ -153,6 +163,7 @@
                 formSubmit() {
 
                     var that = this
+                    this.output = ''
                     var loading = that.$loading({customClass: 'global-loading'})
                     setTimeout(() => {
                         loading.close()
@@ -180,6 +191,28 @@
                         .catch(function (error) {
                             console.log(error)
                         });
+                },
+                wsInit() {
+                    var that = this
+
+                    this.input = document.getElementById("input")
+                    
+                    this.socket = new WebSocket("ws://127.0.0.1:8905/api/ws/echo")
+
+                    this.socket.onopen = function () {
+                        that.output += "Status: Connected\n"
+                        
+                    }
+
+                    this.socket.onmessage = function (e) {
+                        that.output += "Server: " + e.data + "\n"
+                    }
+
+                },
+                send() {
+                    
+                    this.socket.send(this.input.value)
+                    this.input.value = ""
                 },
                
                 popCreate3() {

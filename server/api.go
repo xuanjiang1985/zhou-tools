@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"zhou/tools/controller"
+	"zhou/tools/controller/ws"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,6 +26,10 @@ func loadRouterAPI(e *gin.Engine) {
 			c.BindJSON(port)
 
 			port.Scan(c)
+		})
+
+		router.GET("/ws/echo", func(c *gin.Context) {
+			ws.EchoMessage(c.Writer, c.Request)
 		})
 	}
 }
