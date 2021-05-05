@@ -59,16 +59,38 @@ func Run(ctx context.Context) {
 	c := cron.New()
 
 	// this task is running for test
-	i := 0
-	c.AddFunc("* * * * *", func() {
-		logger.WithFields(logrus.Fields{"i": i}).Info("每1分钟执行")
-		i++
-	})
+	// i := 0
+	// c.AddFunc("* * * * *", func() {
+	// 	logger.WithFields(logrus.Fields{"i": i}).Info("每1分钟执行")
+	// 	i++
+	// })
 
 	c.AddFunc("*/3 * * * *", func() {
-		logger.WithField("b", 1).Info("每3分钟执行")
+		logger.WithField("cron", "running").Info("每3分钟执行")
 
 	})
+
+	// c.AddFunc("10 * * * *", func() {
+	// 	logger.WithField("db_backup", 1).Info("每1小时执行")
+	// 	cmd := exec.Command("/bin/bash", "-c", "/Users/zhougang/db_backup/myj_wyb.sh")
+	// 	output, err := cmd.Output()
+	// 	if err != nil {
+	// 		logger.WithField("db_backup", 0).Info(err.Error())
+	// 		return
+	// 	}
+	// 	logger.WithField("db_backup", 1).Info(string(output))
+	// })
+
+	// c.AddFunc("12 * * * *", func() {
+	// 	logger.WithField("db_backup", 1).Info("每1小时执行")
+	// 	cmd := exec.Command("/bin/bash", "-c", "/Users/zhougang/db_backup/hios_order.sh")
+	// 	output, err := cmd.Output()
+	// 	if err != nil {
+	// 		logger.WithField("db_backup", 0).Info(err.Error())
+	// 		return
+	// 	}
+	// 	logger.WithField("db_backup", 1).Info(string(output))
+	// })
 
 	// 启动执行任务
 	c.Start()

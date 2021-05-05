@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{ template "tmpl/layout/header" . }}
+    <link rel="stylesheet" href="static/css/index.css?v={{ .version }}">
+</head>
+
+<body>
+    <div id="app">
+        <div class="main-container">
+            <el-form :ref="form" :model="form" v-loading="dialogFormVisible">
+                <br>
+                <el-form-item label="" required>
+                    <el-input v-model="form.url" clearable placeholder="请输入URL"></el-input>
+                </el-form-item>
+
+                <el-form-item label="" required>
+                    <el-select v-model="form.method" placeholder="请选择" @change="changeMethod">
+                        <el-option label="GET" value="GET"></el-option>
+                        <el-option label="POST" value="POST"></el-option>
+                        </el-option>
+                      </el-select>
+                </el-form-item>
+
+                <el-form-item label="" v-show="textareaShow">
+                    <el-input type="textarea" v-model="form.data" rows="10" placeholder="请输入json"></el-input>
+                </el-form-item>
+
+                <el-form-item label="">
+                    <el-button @click="formSubmit">提 交</el-button>
+                </el-form-item>
+                <br>
+                
+                <pre>[{ output }]</pre>
+            </el-form>
+        </div>
+    </div>
+    {{ template "tmpl/layout/footer" }}
+    <script>
+        var vueC = new Vue({
+            el: '#app',
+            delimiters:['[{','}]'],
+            data: {
+                id: 0,
+                total: 0,
+                recommendReward: [],
+                recommendRewardNew: [],
+                list: [],
+                activityStatus: [],
+                activityType: [],
+                listLoading: false,
+                activityType: [],
+                activityStatus: [],
+                query: {
+                    page: '',
+                    page_size: 10,
+                    name: '',
+                    start: '',
+                    end: ''
+                },
+                tableKey: 0,
+                month_amount: 100,
+                // 添加弹窗
+
+                dialogFormVisible: false,
+                dialogFormVisible4: false,
+                form: {
+                    url: '',
+                    method: 'GET'
+                },
+                textareaShow: false,
+                // 弹窗2
+                pop_title: '积分规则',
+                dialogFormVisible2: false,
+                form2: [
+                    {
+                        min_amount: '',
+                        max_amount: '',
+                        point: '',
+                        unit_amount: '',
+                        more_poin: '',
+                        rate: ''
+                    }
+                ],
+                type: 0,
+                // 弹窗3
+                pop_title3: '添加',
+                dialogFormVisible3: false,
+                form3: {
+                    id: 0,
+                    name: '',
+                    start_time: '',
+                    end_time: '',
+                    type: ''
+                },
+                // ws
+                socket: null,
+                input: null,
+                output: ''
+            },
+            filters: {
+                formatDate(param) {
+                    if (param === 0 || param === null || param === '') {
+                        return ''
+                    }
+                    const date = new Date(parseInt(param) * 1000)
+                    return format(date, 'yyyy-MM-dd hh:mm:ss')
+                },
+                formatColor(param) {
+                    const primary = 'color:#409EFF;'
+                    const info = 'color:#909399;'
+                    const success = 'color:#67C23A;'
+                    const warning = 'color:#E6A23C;'
+                    const danger = 'color:#F56C6C;'
+
+                    if (param == 1) {
+                        return success
+                    }
+                    return info
+                }
+            },
+            mounted() {
+                //this.getList()
+               
+            },
+            methods: {
+                handleSizeChange(val) {
+                    this.query.page_size = val
+                    this.getList()
+                },
+                handleCurrentChange(val) {
+                    this.query.page = val
+                    this.getList()
+                },
+                onSearch() {
+                    this.query.page = 1
+                    this.getList()
+                },
+                getList() {
+                    var that = this
+                    that.listLoading = true
+                    axios.get('/adminV3/point/reward/recommendReward', {
+                        params: that.query
+                    })
+                        .then(function (response) {
+                            that.listLoading = false
+                            var data = response.data
+
+                            if (data.code != 0) {
+                                that.$message.error(data.message)
+                                return;
+                            }
+
+                            that.recommendReward = data.content.recommendReward
+                            that.recommendRewardNew = [that.recommendReward[0]]
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                },
+                
+                formSubmit() {
+
+                    var that = this
+                    this.output = ''
+                    var loading = that.$loading({customClass: 'global-loading'})
+                    setTimeout(() => {
+                        loading.close()
+                    }, 2000);
+                    axios.post('/api/curr/access', this.form)
+                        .then(function (response) {
+                            loading.close()
+                            var data = response.data
+
+                            if (data.code != 0) {
+                                that.$message.error(data.message)
+                                return
+                            }
+
+                            
+                            
+                            // that.$message({
+                            //     message: "操作成功",
+                            //     type: "success"
+                            // })
+                            
+                        
+                            //that.getList()
+                        })
+                        .catch(function (error) {
+                            console.log(error)
+                        });
+                },
+
+                changeMethod() {
+                    if (this.form.method == 'GET') {
+                        this.textareaShow = false
+                    }
+
+                    if (this.form.method == 'POST') {
+                        this.textareaShow = true
+                    }
+                },
+                popCreate3() {
+                    this.pop_title3 = '添加'
+                    this.dialogFormVisible3 = true
+                    this.form3.id = 0
+                    this.form3.name = ''
+                    this.form3.start_time = ''
+                    this.form3.end_time = ''
+                    this.form3.type = ''
+                },
+                popUpdate3(obj) {
+                    this.pop_title3 = '编辑'
+                    this.dialogFormVisible3 = true
+                    this.form3.id = obj.id
+                    this.form3.name = obj.name
+                    this.form3.start_time = obj.start_time * 1000
+                    this.form3.end_time = obj.end_time * 1000
+                    this.form3.type = obj.type
+                },
+                popUpdateStatus(type, status) {
+                    this.$confirm(`确定${status == 0 ? '生效' : '失效'}此配置?`, '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.confirmeUpdate(type, status == 0 ? 1 : 0)
+
+                    }).catch(() => {
+
+                    });
+                },
+                formSubmit2() {
+
+                    var that = this
+
+                    let url = '/adminV3/point/reward/recommendMonthReward';
+
+                    axios.post(url, { id: this.id, pointArr: this.form2 })
+                        .then(function (response) {
+
+                            var data = response.data
+
+                            if (data.code != 0) {
+                                that.$message.error(data.message)
+                                return
+                            }
+
+                            that.$message({
+                                message: "操作成功",
+                                type: "success"
+                            })
+
+                            that.dialogFormVisible2 = false
+                            that.getList2()
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                },
+                formSubmit3() {
+
+                    var that = this
+
+                    let url = '/adminV3/point/reward/recommendMonthReward3';
+
+                    axios.post(url, this.form3)
+                        .then(function (response) {
+
+                            var data = response.data
+
+                            if (data.code != 0) {
+                                that.$message.error(data.message)
+                                return
+                            }
+
+                            that.$message({
+                                message: "操作成功",
+                                type: "success"
+                            })
+
+                            that.dialogFormVisible3 = false
+                            that.getList2()
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                },
+                confirmeUpdate(type, status) {
+
+                    var that = this
+
+                    let url = '/adminV3/point/reward/recommendMonthRewardStatus'
+
+                    axios.post(url, { type: type, status: status })
+                        .then(function (response) {
+
+                            var data = response.data
+
+                            if (data.code != 0) {
+                                that.$message.error(data.message)
+                                return
+                            }
+
+                            that.$message({
+                                message: "操作成功",
+                                type: "success"
+                            })
+
+                            that.getList2()
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                },
+                plus() {
+                    this.form2.push({
+                        min_amount: '',
+                        max_amount: '',
+                        point: '',
+                        unit_amount: '',
+                        more_poin: '',
+                        rate: '0.00%'
+                    });
+                },
+                minus(index) {
+                    if (1 == this.form2.length) {
+                        this.$message.error('这是最后一个，无法删除')
+                        return
+                    }
+
+                    let arr = []
+                    const oldArr = this.form2
+
+                    for (let i = 0; i < oldArr.length; i++) {
+                        if (i == index) {
+                            continue
+                        }
+                        arr.push(oldArr[i])
+                    }
+                    this.form2 = arr
+                },
+                popDelete(id, status) {
+
+                    this.$confirm(`确定${status == 0 ? '生效' : '失效'}此配置?`, '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.confirmDelete(id, status)
+
+                    }).catch(() => { });
+                },
+                confirmDelete(id, status) {
+                    var that = this
+                    axios.post('/adminV3/point/reward/recommendMonthReward/status/' + id, {
+                        status: status == 0 ? 1 : 0
+                    })
+                        .then(function (response) {
+
+                            var data = response.data
+
+                            if (data.code != 0) {
+                                that.$message.error(data.message)
+                                return
+                            }
+
+                            that.$message({
+                                message: "操作成功",
+                                type: "success"
+                            })
+
+                            that.getList2()
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        })
+                },
+            }
+        });
+
+        function format(date, fmt) {
+            if (/(y+)/.test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
+            }
+            const o = {
+                'M+': date.getMonth() + 1,
+                'd+': date.getDate(),
+                'h+': date.getHours(),
+                'm+': date.getMinutes(),
+                's+': date.getSeconds()
+            }
+            for (const k in o) {
+                if (new RegExp(`(${k})`).test(fmt)) {
+                    const str = o[k] + ''
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? str : ('00' + str).substr(str.length))
+                }
+            }
+            return fmt
+        }
+    </script>
+</body>
+
+</html>

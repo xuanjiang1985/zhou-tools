@@ -89,7 +89,7 @@ func (p *Port) Scan(c *gin.Context) {
 		} else {
 			scanRange(p.Host, startPort, endPort, MsgChan)
 		}
-
+		MsgChan <- "扫描完毕"
 	}()
 
 	c.JSON(http.StatusOK, gin.H{
@@ -102,7 +102,7 @@ func (p *Port) Scan(c *gin.Context) {
 func scanOne(host string, port int) string {
 	_, err := net.DialTimeout("tcp", host+":"+strconv.Itoa(port), time.Duration(time.Second))
 	if err != nil {
-		return err.Error() + "port: " + strconv.Itoa(port)
+		return err.Error() + " port: " + strconv.Itoa(port)
 	}
 
 	return "端口" + strconv.Itoa(port) + "已开放"
@@ -113,7 +113,7 @@ func scanRange(host string, startPort, endPort int, msg chan string) {
 
 		_, err := net.DialTimeout("tcp", host+":"+strconv.Itoa(i), time.Duration(time.Second))
 		if err != nil {
-			msg <- err.Error() + "port: " + strconv.Itoa(i)
+			msg <- err.Error() + " port: " + strconv.Itoa(i)
 			continue
 		}
 		msg <- "端口" + strconv.Itoa(i) + "已开放"

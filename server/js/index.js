@@ -32,6 +32,9 @@ const vm = new Vue({
         },
         goScan() {
             window.location.href = '/scan'
+        },
+        goCurr() {
+            window.location.href = '/curr'
         }
     }
   })

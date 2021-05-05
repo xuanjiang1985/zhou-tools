@@ -8,7 +8,6 @@ import (
 	"syscall"
 	"time"
 	"zhou/tools/config"
-	"zhou/tools/cron"
 	"zhou/tools/logger"
 	"zhou/tools/server"
 )
@@ -30,10 +29,11 @@ func main() {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	ticker := time.NewTicker(60 * time.Second)
+	ticker := time.NewTicker(180 * time.Second)
+	defer ticker.Stop()
 
 	// 任务调度
-	go cron.Run(ctx)
+	//go cron.Run(ctx)
 
 	// web 服务
 	go server.StartWebServer(ctx, ticker)
