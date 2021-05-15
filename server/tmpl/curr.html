@@ -7,27 +7,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {{ template "tmpl/layout/header" . }}
     <link rel="stylesheet" href="static/css/index.css?v={{ .version }}">
+    <style>
+        
+    </style>
 </head>
 
 <body>
     <div id="app">
         <div class="main-container">
-            <el-form :ref="form" :model="form" v-loading="dialogFormVisible">
+            <el-form :ref="form" :model="form" v-loading="dialogFormVisible" label-width="100px">
                 <br>
-                <el-form-item label="" required>
-                    <el-input v-model="form.url" clearable placeholder="请输入URL"></el-input>
+                <el-form-item label="URL" required>
+                    <el-input v-model="form.url" clearable placeholder="请输入URL" class="input-url"></el-input>
                 </el-form-item>
 
-                <el-form-item label="" required>
+                <el-form-item label="请求方法" required>
                     <el-select v-model="form.method" placeholder="请选择" @change="changeMethod">
                         <el-option label="GET" value="GET"></el-option>
                         <el-option label="POST" value="POST"></el-option>
-                        </el-option>
+                        
+                      </el-select>
+                </el-form-item>
+
+                <el-form-item label="并发次数" required>
+                    <el-select v-model="form.number" placeholder="请选择" @change="changeMethod">
+                        <el-option label="2" value="2"></el-option>
+                        <el-option label="3" value="3"></el-option>
+                        <el-option label="4" value="4"></el-option>
+                        <el-option label="5" value="5"></el-option>
+                        <el-option label="6" value="6"></el-option>
+                        <el-option label="7" value="7"></el-option>
                       </el-select>
                 </el-form-item>
 
                 <el-form-item label="" v-show="textareaShow">
-                    <el-input type="textarea" v-model="form.data" rows="10" placeholder="请输入json"></el-input>
+                    <el-input type="textarea" v-model="form.post_body" rows="10" placeholder="请输入json"></el-input>
                 </el-form-item>
 
                 <el-form-item label="">
@@ -70,7 +84,9 @@
                 dialogFormVisible4: false,
                 form: {
                     url: '',
-                    method: 'GET'
+                    method: 'GET',
+                    number: '2',
+                    post_body: ''
                 },
                 textareaShow: false,
                 // 弹窗2
