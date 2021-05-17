@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {{ template "tmpl/layout/header" . }}
-    <link rel="stylesheet" href="static/css/index.css?v={{ .version }}">
+    <link rel="stylesheet" href="/static/css/index.css?v={{ .version }}">
 </head>
 <body>
     <div id="app">
@@ -14,9 +14,10 @@
             <el-button @click="hello">确 定</el-button>
             <el-button @click="goScan">端口扫描</el-button>
             <el-button @click="goCurr">并发访问</el-button>
+            <el-button @click="pcFeature">电脑配置</el-button>
         </div>
     </div>
     {{ template "tmpl/layout/footer" }}
-    <script src="static/js/index.js?v={{ .version }}"></script>
+    <script src="/static/js/index.js?v={{ .version }}"></script>
 </body>
 </html>

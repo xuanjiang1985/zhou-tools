@@ -35,6 +35,9 @@ const vm = new Vue({
         },
         goCurr() {
             window.location.href = '/curr'
+        },
+        pcFeature() {
+            window.location.href = '/pc/feature'
         }
     }
   })

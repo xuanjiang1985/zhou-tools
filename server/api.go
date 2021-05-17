@@ -38,5 +38,9 @@ func loadRouterAPI(e *gin.Engine) {
 			c.BindJSON(access)
 			access.HttpRewrite(c)
 		})
+
+		router.GET("/pc/feature", func(c *gin.Context) {
+			curr.PcFeature(c)
+		})
 	}
 }

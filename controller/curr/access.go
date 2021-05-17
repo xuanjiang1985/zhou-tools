@@ -1,14 +1,15 @@
 package curr
 
 import (
-	"bytes"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 	"zhou/tools/statecode"
 
 	"github.com/gin-gonic/gin"
+	. "github.com/klauspost/cpuid/v2"
 )
 
 type Access struct {
@@ -16,6 +17,11 @@ type Access struct {
 	Method   string `json:"method"`
 	Number   string `json:"number"`
 	PostBody string `json:"post_body"`
+}
+
+type feature struct {
+	Label string `json:"label"`
+	Value string `json:"value"`
 }
 
 func (a *Access) HttpRewrite(c *gin.Context) {
@@ -61,7 +67,7 @@ func (a *Access) HttpRewrite(c *gin.Context) {
 		wg.Wait()
 		c.JSON(http.StatusOK, gin.H{
 			"code":    statecode.Success,
-			"content": &result,
+			"content": gin.H{"result": &result},
 			"message": "ok",
 		})
 		return
@@ -80,7 +86,7 @@ func (a *Access) HttpRewrite(c *gin.Context) {
 		wg.Wait()
 		c.JSON(http.StatusOK, gin.H{
 			"code":    statecode.Success,
-			"content": &result,
+			"content": gin.H{"result": &result},
 			"message": "ok",
 		})
 		return
@@ -113,7 +119,8 @@ func httpGet(a *Access, result *[]string, wg *sync.WaitGroup) {
 
 func httpPost(a *Access, result *[]string, wg *sync.WaitGroup) {
 	client := http.Client{Timeout: 3 * time.Second}
-	resp, err := client.Post(a.Url, "application/json", bytes.NewBuffer([]byte(a.PostBody)))
+	resp, err := client.Post(a.Url, "application/json", strings.NewReader(a.PostBody))
+	//resp, err := client.Post(a.Url, "application/json", bytes.NewBuffer([]byte(a.PostBody)))
 	if err != nil {
 		*result = append(*result, err.Error())
 
@@ -127,4 +134,47 @@ func httpPost(a *Access, result *[]string, wg *sync.WaitGroup) {
 	// fmt.Println(string(rs))
 	// *result = append(*result, string(rs))
 	wg.Done()
+}
+
+func PcFeature(c *gin.Context) {
+	s := make([]feature, 0, 12)
+	s = append(s, feature{
+		Label: "brand",
+		Value: CPU.BrandName,
+	})
+	s = append(s, feature{
+		Label: "PhysicalCores",
+		Value: strconv.Itoa(CPU.PhysicalCores),
+	})
+
+	s = append(s, feature{
+		Label: "ThreadsPerCore",
+		Value: strconv.Itoa(CPU.ThreadsPerCore),
+	})
+
+	s = append(s, feature{
+		Label: "LogicalCores",
+		Value: strconv.Itoa(CPU.LogicalCores),
+	})
+
+	s = append(s, feature{
+		Label: "Family",
+		Value: strconv.Itoa(CPU.Family),
+	})
+
+	s = append(s, feature{
+		Label: "CacheLine",
+		Value: strconv.Itoa(CPU.CacheLine),
+	})
+
+	s = append(s, feature{
+		Label: "Model",
+		Value: strconv.Itoa(CPU.Model),
+	})
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    statecode.Success,
+		"content": gin.H{"list": s},
+		"message": "ok",
+	})
 }
