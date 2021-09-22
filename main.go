@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -16,7 +16,7 @@ func main() {
 
 	// 读取配置
 	if err := config.Setup(); err != nil {
-		fmt.Println(err)
+		log.Fatalln(err)
 		return
 	}
 
@@ -24,7 +24,7 @@ func main() {
 
 	// 初始化日志
 	if err := logger.Setup(); err != nil {
-		fmt.Println(err)
+		log.Fatalln(err)
 		return
 	}
 

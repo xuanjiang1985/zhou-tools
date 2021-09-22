@@ -1,6 +1,6 @@
 // vue
 const vm = new Vue({
-    delimiters: ['@{', '}'],
+    delimiters: ['[{','}]'],
     el: '#app',
     data() {
       return {
